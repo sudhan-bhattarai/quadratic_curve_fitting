@@ -11,8 +11,10 @@ def func(x, a, b, c):
 popt, pcov = optimize.curve_fit(func, data[:,0], data[:,1])
 print('a, b , and c are:', popt, '\n')
 print('predicted y values are:', func(data[:,0], popt[0], popt[1], popt[2]))
+Y_hat = func(data[:,0], popt[0], popt[1], popt[2])
 
-plt.plot(data[:,0], data[:,1], color = 'b', marker='x', label = 'y')
-plt.plot(data[:,0], func(data[:,0], popt[0], popt[1], popt[2]), color = 'r',marker='o', label = 'y_hat')
-plt.legend(loc=4)
-plt.show()
+def Plot_ (data, y_hat):
+    plt.plot(data[:,0], data[:,1], color = 'b', marker='x', label = 'y')
+    plt.plot(data[:,0], Y_hat, color = 'r',marker='o', label = 'y_hat')
+    plt.legend(loc=4)
+    plt.show()

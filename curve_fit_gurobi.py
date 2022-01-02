@@ -1,6 +1,7 @@
 import pandas as pd
 import gurobipy as gb
-from sklearn.metrics import r2_score
+import numpy as np
+import matplotlib.pyplot as plt
 
 df = pd.read_excel(r'data.xlsx')
 data = df.to_numpy()
@@ -40,16 +41,33 @@ m.optimize()
 
 A, B, C, Y_hat = m.getAttr('x', a), m.getAttr(
     'x', b), m.getAttr('x', c), m.getAttr('x', y_hat)
-# solutions =
-print('\na, b, c:', A[0], B[0], C[0], '\nY_hat:', Y_hat)
-print('\nObjecitve:', m.objval)
 ABC = pd.DataFrame([{'a': A[0],
                      'b': B[0],
                      'c': C[0]
                      }])
-YHAT = pd.DataFrame([Y_hat])
+YHAT = pd.DataFrame([Y_hat]).transpose()
+
+dF = pd.DataFrame()
+dF['x'] = data[:, 0]
+dF['y'] = data[:, 1]
+dF['y_hat'] = np.around(YHAT.to_numpy(), decimals=3)
+dF['absolute error'] = np.around(np.abs(dF['y'] - dF['y_hat']), decimals=3)
+
+print('\nObjecitve:', m.objval,
+      '\n a:', A[0],
+      '\n b:', B[0],
+      '\n c:', C[0],
+      '\n', dF)
+def Plot(data, YHAT):
+    plt.plot(data[:,0], data[:,1], color = 'b', marker='x', label = 'y (real)')
+    plt.plot(data[:,0], YHAT.values, color = 'r',marker='o', label = 'y_hat (predicted)')
+    plt.xlabel('X'), plt.ylabel('Y'), plt.title('Real Y vs predicted Y'), plt.legend(loc=4)
+    return plt.show()
+Plot(data, YHAT)
+
 # with pd.ExcelWriter('gurobi output.xlsx') as writer:
 #     ABC.to_excel(writer, sheet_name='abc')
 #     YHAT.to_excel(writer, sheet_name='yhat')
-YHAT = YHAT.transpose()
-print(r2_score(YHAT.values, y))
+# YHAT = YHAT.transpose()
+# print(r2_score(YHAT.values, y))
+# print('\n','\n','\n','\n','\n','\n','\n','\n','\n','\n','\n','\n','\n','\n','\n','\n',)
